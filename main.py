@@ -3,6 +3,31 @@ from PyQt5 import QtCore, QtGui
 import sys
 import fonts
 import requests
+import urllib
+from urllib.request import urlopen
+from urllib.request import Request
+import json
+from datetime import datetime
+
+
+def get_current_time():
+    ct = datetime.now()
+
+    currentTimeInMinutes = ct.minute + ct.hour * 60
+
+    if currentTimeInMinutes in range(0, 635):
+        return 1
+    elif currentTimeInMinutes in range(635, 755):
+        return 2
+    elif currentTimeInMinutes in range(755, 855):
+        return 3
+    elif currentTimeInMinutes in range(855, 975):
+        return 4
+    elif currentTimeInMinutes in range(975, 1075):
+        return 5
+    elif currentTimeInMinutes in range(1075, 1175):
+        return 6
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -17,7 +42,7 @@ class MainWindow(QMainWindow):
     def setupUi(self):
         self.setWindowTitle("Hello")
         self.move(0, 0)
-        self.resize(1920, 1080)
+        self.resize(500, 200)
         self.LeftBar = QPushButton()
         self.LeftBar.resize(100, 100)
         self.LeftBar.move(100, 100)
@@ -29,19 +54,41 @@ class MainWindow(QMainWindow):
         self.lineEdit.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold))
         self.lineEdit.textEdited.connect(self.my_func)
 
+
     def my_func(self, text):
         try:
             self.Label.setText(fonts.Fonts.ConsoleFont(self.StudentsList[text]))
             self.lineEdit.clear()
             
-            url = 'https://indieworkers.ru/serv/srv.php'
-            myjson = {'student' : text}
-            comm = 5
+            '''
+            url = 'https://indieworkers.ru/serv/atten.php'
+            payload = {"student" : text}
+            headers = {'content-type': 'application/json'}  
+            data = urllib.urlencode(payload)
+            req = Request(url, data, headers)
+            response = urlopen(req)
+            the_page = response.read()
+
+            #print(the_page)
+            '''
             
-            x = requests.post(url, json = myjson)
+
+            url = 'https://ipelab.ru/serv/atten.php'
+            datetime.today().strftime('%Y-%m-%d')
+            payload =   {
+                            'py_comm'       : 1,
+                            'student'       : text,
+                            'cur_date'      : datetime.today().strftime('%Y-%m-%d'),
+                            'cur_lesson'    : get_current_time()
+                        }
+            
+            #x = requests.post(url, data = json.dumps({"payload": text}))
+            x = requests.post(url, data=json.dumps(payload))
 
             #print the response text (the content of the requested file):
             print(x.text)
+            #print(x)
+
 
         except:
             self.Label.setText(fonts.Fonts.ConsoleFont('Не введен номер студента'))
