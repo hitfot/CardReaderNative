@@ -2,13 +2,15 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtCore, QtGui
 import sys
 import fonts
+import requests
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.StudentsList = {
             '123' : 'Влад',
-            '2' : 'Миша'
+            '0009044070' : 'Миша',
+            '0009227889' : 'Петя'
         }
         self.setupUi()
     
@@ -31,6 +33,16 @@ class MainWindow(QMainWindow):
         try:
             self.Label.setText(fonts.Fonts.ConsoleFont(self.StudentsList[text]))
             self.lineEdit.clear()
+            
+            url = 'https://indieworkers.ru/serv/srv.php'
+            myjson = {'student' : text}
+            comm = 5
+            
+            x = requests.post(url, json = myjson)
+
+            #print the response text (the content of the requested file):
+            print(x.text)
+
         except:
             self.Label.setText(fonts.Fonts.ConsoleFont('Не введен номер студента'))
     
