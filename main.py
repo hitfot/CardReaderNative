@@ -35,7 +35,10 @@ class MainWindow(QMainWindow):
         self.StudentsList = {
             '123' : 'Влад',
             '0009044070' : 'Миша',
-            '0009227889' : 'Петя'
+            '0009227889' : 'Петя',
+            '0014774697' : 'Влад',
+            '0014247922' : 'Леша',
+            '0011669327' : 'Коля'
         }
         self.setupUi()
     
@@ -54,24 +57,10 @@ class MainWindow(QMainWindow):
         self.lineEdit.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold))
         self.lineEdit.textEdited.connect(self.my_func)
 
-
     def my_func(self, text):
         try:
             self.Label.setText(fonts.Fonts.ConsoleFont(self.StudentsList[text]))
             self.lineEdit.clear()
-            
-            '''
-            url = 'https://indieworkers.ru/serv/atten.php'
-            payload = {"student" : text}
-            headers = {'content-type': 'application/json'}  
-            data = urllib.urlencode(payload)
-            req = Request(url, data, headers)
-            response = urlopen(req)
-            the_page = response.read()
-
-            #print(the_page)
-            '''
-            
 
             url = 'https://ipelab.ru/serv/atten.php'
             datetime.today().strftime('%Y-%m-%d')
@@ -82,13 +71,8 @@ class MainWindow(QMainWindow):
                             'cur_lesson'    : get_current_time()
                         }
             
-            #x = requests.post(url, data = json.dumps({"payload": text}))
             x = requests.post(url, data=json.dumps(payload))
-
-            #print the response text (the content of the requested file):
             print(x.text)
-            #print(x)
-
 
         except:
             self.Label.setText(fonts.Fonts.ConsoleFont('Не введен номер студента'))
