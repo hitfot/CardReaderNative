@@ -32,47 +32,77 @@ def get_current_time():
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.StudentsList = {
-            '123' : 'Влад',
-            '0009044070' : 'Миша',
-            '0009227889' : 'Петя',
-            '0014774697' : 'Влад',
-            '0014247922' : 'Леша',
-            '0011669327' : 'Коля'
-        }
+
+        try:
+            url = 'https://ipelab.ru/serv/atten.php'
+            payload = {'py_get_comm' : 1,}
+            
+            x = requests.get(url, params=payload)
+            #print(x.text)
+            response = json.loads(x.text)
+
+            self.StudentsList = {}
+
+            for i in range(0, len(response)):
+                #print(response[i]['studak'], response[i]['name'])
+                self.StudentsList.update({response[i]['studak'] : response[i]['name']})
+
+            print('Список студентов получен')
+        except:
+            print('Ошибка получения списка студентов')
+            
         self.setupUi()
     
+
     def setupUi(self):
-        self.setWindowTitle("Hello")
+        self.setWindowTitle("Attendance")
         self.move(0, 0)
         self.resize(500, 200)
         self.LeftBar = QPushButton()
         self.LeftBar.resize(100, 100)
         self.LeftBar.move(100, 100)
+
         self.Label = QLabel(self)
         self.Label.resize(500, 100)
-        self.Label.move(0, 100)
-        self.lineEdit = QLineEdit(self)
-        self.lineEdit.resize(1000, 100)
-        self.lineEdit.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold))
-        self.lineEdit.textEdited.connect(self.my_func)
+        self.Label.move(0, 25)
+        
+        self.lineEditStudak = QLineEdit(self)
+        self.lineEditStudak.resize(500, 50)
+        self.lineEditStudak.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold))
+        self.lineEditStudak.setPlaceholderText("Номер студенческого")
+        self.lineEditStudak.textEdited.connect(self.my_func)
+
+        self.lineEditLessonNumber = QLineEdit(self)
+        self.lineEditLessonNumber.resize(500, 50)
+        self.lineEditLessonNumber.move(0, 100)
+        self.lineEditLessonNumber.setFont(QtGui.QFont("Times", 25, QtGui.QFont.Bold))
+        self.lineEditLessonNumber.setPlaceholderText("Номер пары")
+
+
 
     def my_func(self, text):
         try:
             self.Label.setText(fonts.Fonts.ConsoleFont(self.StudentsList[text]))
-            self.lineEdit.clear()
+            self.lineEditStudak.clear()
+
+            if (self.lineEditLessonNumber.text() == ''):
+                lesson_number = get_current_time()
+            else:
+                lesson_number = self.lineEditLessonNumber.text()
+            
+            print('Номер пары:', lesson_number)
 
             url = 'https://ipelab.ru/serv/atten.php'
             datetime.today().strftime('%Y-%m-%d')
             payload =   {
-                            'py_comm'       : 1,
+                            'py_post_comm'  : 1,
                             'student'       : text,
                             'cur_date'      : datetime.today().strftime('%Y-%m-%d'),
-                            'cur_lesson'    : get_current_time()
+                            'cur_lesson'    : lesson_number
                         }
             
-            x = requests.post(url, data=json.dumps(payload))
-            print(x.text)
+            x = requests.post(url, data=payload)
+            print(self.StudentsList[text], x.text)
 
         except:
             self.Label.setText(fonts.Fonts.ConsoleFont('Не введен номер студента'))
