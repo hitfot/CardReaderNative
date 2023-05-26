@@ -18,6 +18,10 @@ __Цель проекта - вдохновить людей, способных 
 - [Кирилл Новиков](https://github.com/NeSmotriPojaluista)
 - [Петр Соловьев](https://github.com/Peter35764)
 
+<p align="center">
+   <img src="https://img.shields.io/badge/version-1.0(Alpha)-green" alt="AppVersion">
+   <img src="https://img.shields.io/badge/License-MIT-red" alt="License">
+</p>
 
 
 
